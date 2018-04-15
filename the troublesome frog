@@ -1,0 +1,84 @@
+#include<iostream>
+#include<stdio.h>
+#include<algorithm>
+using namespace std;
+
+int r,c,n,temp,ans=0,dx,dy,temp1,temp2;
+struct Node{
+	int x,y;
+}; 
+Node co[5005];
+int cmp (const Node a, const Node b);
+bool spath(int a, int b, int c);
+int main () {
+	scanf("%d%d%d", &r, &c, &n);
+	for (int i = 0; i < n; ++i) 
+		scanf("%d%d", &co[i].x, &co[i].y);
+	sort(co, co+n, cmp);
+	for (int i = 0; i < n-2; ++i) {
+		for (int j = i+1; j < n-1; ++j) {
+			temp = 2;
+			dx = co[j].x-co[i].x;
+			dy = co[j].y-co[i].y;
+			if (co[i].x-dx>0&&co[i].x-dx<=r&&co[i].y-dy>0&&co[i].y-dy<=c) {
+				continue;
+			}
+			if (co[i].x+ans*dx>r) {
+				break;
+			}
+			if (co[i].y+ans*dy<1 || co[i].y+ans*dy > c) 
+				continue;
+			temp1 = j;
+			while (spath(temp1, dx, dy)) {
+				temp++;
+				temp1 = temp2;
+			}
+			if (co[temp1].x+dx<=r&&co[temp1].y+dy<=c&&co[temp1].y+dy>0) {
+				continue;
+			}
+			if (temp>ans)
+				ans = temp;
+		}
+	}
+	if (ans<=2) {
+		printf("0\n");
+		return 0;
+	}
+	printf("%d\n", ans);
+	return 0;
+}
+
+int cmp (const Node a, const Node b) {
+	if (a.x == b.x) 
+		return a.y < b.y;
+	return a.x < b.x; 
+}
+
+bool spath(int a, int b, int c) {
+	int low = 0, high = n-1, mid, x1, y1;
+	x1 = co[a].x+b;
+	y1 = co[a].y+c;
+	while (low<=high) {
+		if (x1==co[low].x&&y1==co[low].y) {
+			temp2 = low;
+			return 1;
+		}
+		if (x1==co[high].x&&y1==co[high].y) {
+			temp2 = high;
+			return 1;
+		}
+		mid = low + (high - low)/2;
+		if (x1==co[mid].x&&y1==co[mid].y) {
+			temp2 = mid;
+			return 1;
+		}
+		if (x1<co[mid].x || (x1==co[mid].x&&y1<co[mid].y)) {
+			high = mid - 1;
+		} 
+		if (x1>co[mid].x || (x1==co[mid].x&&y1>co[mid].y)) {
+			low = mid + 1;
+		}
+	}
+	if (low > high) 
+		return 0;
+}
